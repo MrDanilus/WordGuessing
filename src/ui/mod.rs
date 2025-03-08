@@ -11,7 +11,9 @@ pub enum Message {
     Start,
     Exit,
 
-    InputChar(char)
+    InputChar(char),
+    RemoveChar,
+    SubmitWord
 }
 
 #[derive(Debug, Clone, Default)]
@@ -24,8 +26,11 @@ pub enum Page {
 pub struct Game {
     pub playing: bool,
     pub word: Vec<char>,
-    pub current_row: u8,
-    pub words: [[char; 5]; 5]
+
+    pub current_pos: (u8, u8), // (Row, Col)
+    pub words: [[char; 5]; 5],
+
+    pub msg: (Color, String)
 }
 #[derive(Default)]
 pub struct WGuess {

@@ -1,4 +1,4 @@
-use iced::{alignment::{Horizontal, Vertical}, border::Radius, widget::{button, column, container, text}, Border, Color, Element, Length, Padding};
+use iced::{alignment::{Horizontal, Vertical}, border::Radius, widget::{button, column, container, text}, Border, Element, Length, Padding};
 
 use crate::ui::{Message, WGuess};
 

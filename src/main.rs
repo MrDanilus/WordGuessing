@@ -12,5 +12,6 @@ fn main() -> iced::Result {
             size: Size::new(600.0, 700.0),
             ..Default::default()
         })
+        .subscription(WGuess::subscription)
         .run()
 }

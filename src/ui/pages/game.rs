@@ -1,4 +1,4 @@
-use iced::{alignment::{Horizontal, Vertical}, border::Radius, widget::{button, column, container, row, text, text_input, Column, Row}, Border, Color, Element, Length, Padding};
+use iced::{alignment::Horizontal, border::Radius, widget::{button, column, container, text, text_input, Column, Row}, Border, Color, Element, Length, Padding};
 
 use crate::ui::{Message, WGuess};
 
@@ -20,10 +20,19 @@ pub fn func(wguess: &WGuess) -> Element<Message> {
     };
 
     container(
-        container(
-            Column::from_vec(rows).spacing(2)
-        ).align_x(Horizontal::Center)
-        .width(Length::Fill).padding(Padding::top(Padding::default(), 20))
+        column![
+            text(wguess.game.word.iter().collect::<String>()).size(30)
+                .color(Color::WHITE).align_x(Horizontal::Center).width(Length::Fill),
+            container(
+                Column::from_vec(rows).spacing(2)
+            ).align_x(Horizontal::Center)
+            .width(Length::Fill).padding(Padding::top(Padding::default(), 20)),
+            text(wguess.game.msg.1.clone()).size(30).width(Length::Fill)
+                .color(wguess.game.msg.0).align_x(Horizontal::Center),
+            button(text("Retry").size(28))
+                .on_press(Message::Start).width(160)
+                .padding(10),
+        ]
     ).into()
 }
 

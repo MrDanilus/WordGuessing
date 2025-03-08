@@ -1,4 +1,4 @@
-use iced::{event, keyboard::{self, Key}, Event, Subscription};
+use iced::{event, keyboard::{self, key::Named, Key}, Event, Subscription};
 
 use crate::ui::{Message, WGuess};
 pub mod words;
@@ -13,13 +13,23 @@ impl WGuess{
                         { key, location: _, modifiers: _ } => {
                             match key {
                                 Key::Character(character) => {
-                                    if character.len() == 1 {
+                                    if character.chars().count() == 1 {
                                         let char = character.chars().nth(0).unwrap();
                                         Some(Message::InputChar(char))
                                     } else{
+                                        println!("Char: {:?}", character.len());
                                         None
                                     }
                                 },
+                                Key::Named(name) => {
+                                    match name {
+                                        Named::Backspace | Named::Delete => 
+                                            Some(Message::RemoveChar),
+                                        Named::Enter | Named::Space => 
+                                            Some(Message::SubmitWord),
+                                        _ => None
+                                    }
+                                }
                                 _ => None
                             }
                         },
