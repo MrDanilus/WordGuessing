@@ -1,6 +1,6 @@
 use iced::{exit, Color, Task};
 
-use crate::{back::words::random_word, ui::{Message, Page, WGuess}};
+use crate::{back::words::random_word, ui::{CharType, Message, Page, WGuess}};
 
 pub fn func(wguess: &mut WGuess, message: Message) -> Task<Message> {
     match message {
@@ -8,7 +8,7 @@ pub fn func(wguess: &mut WGuess, message: Message) -> Task<Message> {
             wguess.game.playing = true;
             wguess.game.word = random_word().chars().collect();
             wguess.game.current_pos = (0, 0);
-            wguess.game.words = [[' '; 5]; 5];
+            wguess.game.words = [[(' ', CharType::NotFound); 5]; 6];
             wguess.game.msg = (Color::TRANSPARENT, "".to_string());
             wguess.page = Page::Game;
         },
@@ -21,10 +21,10 @@ pub fn func(wguess: &mut WGuess, message: Message) -> Task<Message> {
   
             let (row, col) = wguess.game.current_pos;
             if col != 4{
-                wguess.game.words[row as usize][col as usize] = character;
+                wguess.game.words[row as usize][col as usize] = (character, CharType::NotFound);
                 wguess.game.current_pos = (row, col + 1);
-            } else if wguess.game.words[row as usize][col as usize] == ' ' {
-                wguess.game.words[row as usize][col as usize] = character;
+            } else if wguess.game.words[row as usize][col as usize].0 == ' ' {
+                wguess.game.words[row as usize][col as usize] = (character, CharType::NotFound);
             }
 
             return Task::none()
@@ -36,8 +36,10 @@ pub fn func(wguess: &mut WGuess, message: Message) -> Task<Message> {
 
             let (row, col) = wguess.game.current_pos;
             if col > 0 {
-                wguess.game.words[row as usize][col as usize - 1] = ' ';
+                wguess.game.words[row as usize][col as usize] = (' ', CharType::NotFound);
                 wguess.game.current_pos = (row, col - 1);
+            } else{
+                wguess.game.words[row as usize][col as usize] = (' ', CharType::NotFound);
             }
         },
         Message::SubmitWord => {
@@ -47,10 +49,23 @@ pub fn func(wguess: &mut WGuess, message: Message) -> Task<Message> {
             
             let (row, col) = wguess.game.current_pos;
             if col == 4 {
-                // Check if the word is correct
-                let word: String = wguess.game.words[row as usize].iter().collect::<String>();
-                let word = word.chars().collect::<Vec<char>>();
-                if word == wguess.game.word {
+                let mut searched = Vec::new();
+                let mut count_correct = 0;
+                let word = wguess.game.word.clone();
+                // Перебор букв в словах
+                for i in 0..wguess.game.words[row as usize].len(){
+                    let correct_char = word[i as usize];
+                    let curr_char = wguess.game.words[row as usize][i as usize];
+                    if curr_char.0 == correct_char{
+                        count_correct += 1;
+                        wguess.game.words[row as usize][i as usize].1 = CharType::Correct;
+                    } else if word.contains(&curr_char.0) && !searched.contains(&curr_char.0){
+                        wguess.game.words[row as usize][i as usize].1 = CharType::Exists;
+                    }
+                    searched.push(curr_char.0);
+                }
+                // TODO: добавить поддержку подсвечивания нескольких одинаковых букв в слове
+                if count_correct == 5 {
                     // Correct word
                     wguess.game.playing = false;
                     wguess.game.msg = (Color::from_rgb8(0, 255, 0), 
@@ -60,10 +75,11 @@ pub fn func(wguess: &mut WGuess, message: Message) -> Task<Message> {
                 }
             }
             
-            if wguess.game.current_pos.0 == 5 {
+            if wguess.game.current_pos.0 == wguess.game.words.len() as u8 {
                 wguess.game.playing = false;
                 wguess.game.msg = (Color::from_rgb8(255, 0, 0), 
-                    "Вы не угадали слово!".to_string());
+                    format!("Вы не угадали слово!\nПравильное слово: '{}'", 
+                    wguess.game.word.clone().into_iter().collect::<String>()));
                 return Task::none()
             }
         }

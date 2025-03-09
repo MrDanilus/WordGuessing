@@ -16,11 +16,12 @@ pub enum Message {
     SubmitWord
 }
 
-#[derive(Debug, Clone, Default)]
-pub enum Page {
+#[derive(Debug, Clone, Copy, Default)]
+pub enum CharType {
     #[default]
-    Menu,
-    Game
+    NotFound,
+    Exists,
+    Correct
 }
 #[derive(Default)]
 pub struct Game {
@@ -28,9 +29,15 @@ pub struct Game {
     pub word: Vec<char>,
 
     pub current_pos: (u8, u8), // (Row, Col)
-    pub words: [[char; 5]; 5],
+    pub words: [[(char, CharType); 5]; 6],
 
     pub msg: (Color, String)
+}
+#[derive(Debug, Clone, Default)]
+pub enum Page {
+    #[default]
+    Menu,
+    Game
 }
 #[derive(Default)]
 pub struct WGuess {
