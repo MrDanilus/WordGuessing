@@ -20,12 +20,12 @@ pub fn func(wguess: &mut WGuess, message: Message) -> Task<Message> {
             }
   
             let (row, col) = wguess.game.current_pos;
-            if col != 4{
-                wguess.game.words[row as usize][col as usize] = (character, CharType::NotFound);
-                wguess.game.current_pos = (row, col + 1);
-            } else if wguess.game.words[row as usize][col as usize].0 == ' ' {
-                wguess.game.words[row as usize][col as usize] = (character, CharType::NotFound);
+            if col == wguess.game.word.len() as u8{
+                return Task::none()
             }
+
+            wguess.game.words[row as usize][col as usize] = (character, CharType::NotFound);
+            wguess.game.current_pos = (row, col + 1);
 
             return Task::none()
         },
@@ -36,8 +36,9 @@ pub fn func(wguess: &mut WGuess, message: Message) -> Task<Message> {
 
             let (row, col) = wguess.game.current_pos;
             if col > 0 {
+                let col = col - 1;
                 wguess.game.words[row as usize][col as usize] = (' ', CharType::NotFound);
-                wguess.game.current_pos = (row, col - 1);
+                wguess.game.current_pos = (row, col);
             } else{
                 wguess.game.words[row as usize][col as usize] = (' ', CharType::NotFound);
             }
@@ -48,7 +49,7 @@ pub fn func(wguess: &mut WGuess, message: Message) -> Task<Message> {
             }
             
             let (row, col) = wguess.game.current_pos;
-            if col == 4 {
+            if col == wguess.game.word.len() as u8 {
                 let mut searched = Vec::new();
                 let mut count_correct = 0;
                 let word = wguess.game.word.clone();
