@@ -1,5 +1,5 @@
 name: Автоматическая сборка и публикация приложения WordGuessing
-run-name: Версия приложения - ${{ env.CARGO_PKG_VERSION }}. Коммит '${{ github.event.head_commit.message }}'.  
+run-name: Коммит '${{ github.event.head_commit.message }}'.  
 
 on:
   push:
@@ -25,7 +25,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: word_guessing_linux
-          path: target/release/word_guessin
+          path: target/release/word_guessing_${{ env.CARGO_PKG_VERSION }}
   build-windows:
     runs-on: windows-latest
     steps:
@@ -44,7 +44,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: word_guessing_windows
-          path: target/release/word_guessing.exe
+          path: target/release/word_guessing_${{ env.CARGO_PKG_VERSION }}.exe
   
   publish:
     runs-on: ubuntu-latest
@@ -62,4 +62,4 @@ jobs:
           path: artifacts/word_guessing.exe
       - name: Публикация файлов
         run: |
-          gh release create --generate-notes artifacts/word_guessing artifacts/word_guessing.exe
+          gh release create --generate-notes artifacts/word_guessing_${{ env.CARGO_PKG_VERSION }} artifacts/word_guessing_${{ env.CARGO_PKG_VERSION }}.exe
