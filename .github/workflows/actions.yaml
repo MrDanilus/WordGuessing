@@ -1,14 +1,26 @@
 name: Автоматическая сборка и публикация приложения WordGuessing
 run-name: Коммит '${{ github.event.head_commit.message }}'.  
 
+env:
+  GH_TOKEN: ${{ github.token }}
+
 on:
   push:
     branches:
       - main
       - test_actions
 jobs:
-  build-linux:
-    runs-on: ubuntu-latest
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: linux
+            runner: ubuntu-latest
+            file: word_guessing
+          - os: windows
+            runner: windows-latest
+            file: word_guessing.exe
+    runs-on: ${{ matrix.runner }}
     steps:
       - uses: actions/checkout@v4
       - name: Кэш зависимостей
@@ -18,37 +30,18 @@ jobs:
             ~/.cargo/registry
             ~/.cargo/git
             target
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          key: ${{ matrix.runner }}-cargo-${{ hashFiles('**/Cargo.lock') }}
       - name: Сборка бинарного файла
         run: cargo build --release
       - name: Сохранение файла в артифакты
         uses: actions/upload-artifact@v4
         with:
-          name: word_guessing_linux
-          path: target/release/word_guessing
-  build-windows:
-    runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Кэш зависимостей
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/git
-            target
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-      - name: Сборка бинарного файла
-        run: cargo build --release
-      - name: Сохранение файла в артифакты
-        uses: actions/upload-artifact@v4
-        with:
-          name: word_guessing_windows
-          path: target/release/word_guessing.exe
+          name: word_guessing_${{ matrix.os }}
+          path: target/release/${{ matrix.file }}
   
   publish:
     runs-on: ubuntu-latest
-    needs: [build-linux, build-windows]
+    needs: [build]
     steps:
       - uses: actions/checkout@v4
       - name: Загрузка бинарного файла linux из артефактов
