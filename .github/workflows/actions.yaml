@@ -61,6 +61,6 @@ jobs:
           cargo_toml_folder: ./
       - name: Публикация файлов
         run: |
-          gh release create --generate-notes \
-            'artifacts/word_guessing#word_guessing_v${{ steps.foo.outputs.app_version }}_linux_x64' \
-            'artifacts/word_guessing.exe#word_guessing_v${{ steps.foo.outputs.app_version }}_windows_x64' 
+          gh release create "${{ steps.app_version.outputs.app_version }}" \
+            'artifacts/word_guessing#word_guessing_v${{ steps.app_version.outputs.app_version }}_linux_x64' \
+            'artifacts/word_guessing.exe#word_guessing_v${{ steps.app_version.outputs.app_version }}_windows_x64' 
