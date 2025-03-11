@@ -11,6 +11,35 @@ jobs:
       - uses: actions/checkout@v4
       - name: Сборка бинарного файла
         run: cargo build --release
+      - name: Кэширование зависимостей
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+      - name: Сохранение файла в артифакты
+        uses: actions/upload-artifact@v4
+        with:
+          name: word_guessing
+          path: target/release/word_guessing
+  build-windows:
+    runs-on: windows-latest
+    outputs:
+      release_app: ${{ steps.set-output.outputs.release_built }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Сборка бинарного файла
+        run: cargo build --release
+      - name: Кэширование зависимостей
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
       - name: Сохранение файла в артифакты
         uses: actions/upload-artifact@v4
         with:
