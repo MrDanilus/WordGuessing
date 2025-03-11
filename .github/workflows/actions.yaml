@@ -1,0 +1,19 @@
+name: Автоматическая сборка и публикация приложения WordGuessing
+run-name: Сборка нового коммита '${{ github.event.head_commit.message }}'
+
+on: [push]
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+    outputs:
+      release_app: ${{ steps.set-output.outputs.release_built }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Сборка бинарного файла
+        run: cargo build --release
+      - name: Сохранение файла в артифакты
+        uses: actions/upload-artifact@v4
+        with:
+          name: word_guessing
+          path: target/release/word_guessing
+        
