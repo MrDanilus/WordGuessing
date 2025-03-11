@@ -48,12 +48,12 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: word_guessing_linux
-          path: artifacts/word_guessing
+          path: artifacts
       - name: Загрузка бинарного файла windows из артефактов
         uses: actions/download-artifact@v4
         with:
           name: word_guessing_windows
-          path: artifacts/word_guessing.exe
+          path: artifacts
       - name: Получение версии приложения из Cargo.toml
         id: app_version
         uses: dante-signal31/rust-app-version@v1.2.0
