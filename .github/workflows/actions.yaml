@@ -9,9 +9,7 @@ jobs:
       release_app: ${{ steps.set-output.outputs.release_built }}
     steps:
       - uses: actions/checkout@v4
-      - name: Сборка бинарного файла
-        run: cargo build --release
-      - name: Кэширование зависимостей
+      - name: Кэш зависимостей
         uses: actions/cache@v4
         with:
           path: |
@@ -19,6 +17,8 @@ jobs:
             ~/.cargo/git
             target
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+      - name: Сборка бинарного файла
+        run: cargo build --release
       - name: Сохранение файла в артифакты
         uses: actions/upload-artifact@v4
         with:
@@ -30,9 +30,7 @@ jobs:
       release_app: ${{ steps.set-output.outputs.release_built }}
     steps:
       - uses: actions/checkout@v4
-      - name: Сборка бинарного файла
-        run: cargo build --release
-      - name: Кэширование зависимостей
+      - name: Кэш зависимостей
         uses: actions/cache@v4
         with:
           path: |
@@ -40,9 +38,11 @@ jobs:
             ~/.cargo/git
             target
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+      - name: Сборка бинарного файла
+        run: cargo build --release
       - name: Сохранение файла в артифакты
         uses: actions/upload-artifact@v4
         with:
           name: word_guessing
-          path: target/release/word_guessing
+          path: target/release/word_guessing.exe
         
