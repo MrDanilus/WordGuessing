@@ -1,8 +1,8 @@
-name: Автоматическая сборка и публикация приложения WordGuessing
+name: Сборка и публикация приложения
 run-name: Коммит '${{ github.event.head_commit.message }}'.  
 
 env:
-  GH_TOKEN: ${{ github.token }}
+  GH_TOKEN: ${{ secrets.RELEASE_TOKEN }}
 
 on:
   push:
