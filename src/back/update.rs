@@ -2,6 +2,8 @@ use iced::{exit, Color, Task};
 
 use crate::{back::words::random_word, ui::{CharType, Message, Page, WGuess}};
 
+use super::words::check_word;
+
 pub fn func(wguess: &mut WGuess, message: Message) -> Task<Message> {
     match message {
         Message::Start => {
@@ -19,6 +21,8 @@ pub fn func(wguess: &mut WGuess, message: Message) -> Task<Message> {
                 return Task::none()
             }
   
+            wguess.game.msg.1 = String::new();
+
             let (row, col) = wguess.game.current_pos;
             if col == wguess.game.word.len() as u8{
                 return Task::none()
@@ -49,6 +53,16 @@ pub fn func(wguess: &mut WGuess, message: Message) -> Task<Message> {
             }
             
             let (row, col) = wguess.game.current_pos;
+            let mut word: String = String::new();
+            for char in wguess.game.words[row as usize]{
+                word.push(char.0);
+            }
+            if !check_word(&word){
+                wguess.game.playing = false;
+                wguess.game.msg = (Color::from_rgb8(255, 0, 0), 
+                    "Слово не найдено в словаре".to_string());
+            }
+
             if col == wguess.game.word.len() as u8 {
                 let mut searched = Vec::new();
                 let mut count_correct = 0;
@@ -65,7 +79,7 @@ pub fn func(wguess: &mut WGuess, message: Message) -> Task<Message> {
                     }
                     searched.push(curr_char.0);
                 }
-                // TODO: добавить поддержку подсвечивания нескольких одинаковых букв в слове
+
                 if count_correct == 5 {
                     // Correct word
                     wguess.game.playing = false;
@@ -74,10 +88,13 @@ pub fn func(wguess: &mut WGuess, message: Message) -> Task<Message> {
                 } else {
                     wguess.game.current_pos = (row + 1, 0);
                 }
+            } else{
+                wguess.game.playing = false;
+                wguess.game.msg = (Color::from_rgb8(255, 0, 0), 
+                    "Некорректная длина слова".to_string());
             }
             
             if wguess.game.current_pos.0 == wguess.game.words.len() as u8 {
-                wguess.game.playing = false;
                 wguess.game.msg = (Color::from_rgb8(255, 0, 0), 
                     format!("Вы не угадали слово!\nПравильное слово: '{}'", 
                     wguess.game.word.clone().into_iter().collect::<String>()));
