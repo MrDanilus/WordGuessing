@@ -3861,7 +3861,7 @@ dependencies = [
 
 [[package]]
 name = "word_guessing"
-version = "0.1.0"
+version = "0.5.0"
 dependencies = [
  "iced",
  "rand 0.9.0",

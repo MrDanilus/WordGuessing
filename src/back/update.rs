@@ -61,6 +61,7 @@ pub fn func(wguess: &mut WGuess, message: Message) -> Task<Message> {
                 wguess.game.playing = false;
                 wguess.game.msg = (Color::from_rgb8(255, 0, 0), 
                     "Слово не найдено в словаре".to_string());
+                return Task::none()
             }
 
             if col == wguess.game.word.len() as u8 {
